@@ -1,0 +1,175 @@
+.playlist-detail-wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(180deg, #2a002d 0%, #0a0010 100%);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.playlist-detail-header {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.playlist-detail-header h1 {
+  color: #ff69b4;
+  font-size: 2rem;
+  text-shadow: 0 0 10px #ff69b4b3;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 2px solid #ff69b4;
+  color: #ff69b4;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #ff69b4;
+  color: #120013;
+}
+
+.music-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.music-form input {
+  background: #1c1c1c;
+  border: 2px solid transparent;
+  padding: 0.8rem;
+  border-radius: 8px;
+  color: #fff;
+  transition: border-color 0.3s;
+}
+
+.music-form input:focus {
+  border-color: #ff69b4;
+  outline: none;
+}
+
+.add-btn,
+.cancel-btn {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ff85c1, #ff3ba7);
+}
+
+.cancel-btn {
+  background: #555;
+}
+
+.cancel-btn:hover {
+  background: #777;
+}
+
+.music-list {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.music-card {
+  background: #1c1c1c;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 10px rgba(255, 105, 180, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.music-card:hover {
+  background: #272727;
+}
+
+.music-info h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.music-info p {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin: 0.2rem 0 0 0;
+}
+
+.music-actions button {
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.edit-btn {
+  background: #ff69b4;
+  color: #120013;
+}
+
+.edit-btn:hover {
+  background: #ff85c1;
+}
+
+.delete-btn {
+  background: #c53030;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background: #e53e3e;
+}
+
+.no-music {
+  color: #bbb;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.back-btn {
+  margin-top: 2rem;
+  background: transparent;
+  color: #ff69b4;
+  border: 2px solid #ff69b4;
+  padding: 0.7rem 1.5rem;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background: #ff69b4;
+  color: #120013;
+}
