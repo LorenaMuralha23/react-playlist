@@ -1,29 +1,45 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { registerUser, clearError } from "./authSlice";
-import type { RootState } from "../../app/store";
-import "./LoginPage.css";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { registerUser } from "./authSlice";
+import { isValidEmail, isValidPassword } from "../../utils/validation";
+import "./LoginPage.css"; // pode reutilizar o CSS
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmError, setConfirmError] = useState("");
   const dispatch = useDispatch();
-  const { currentUser, error } = useSelector((s: RootState) => s.auth);
+
+  useEffect(() => {
+    if (email && !isValidEmail(email)) setEmailError("Formato de e-mail inválido.");
+    else setEmailError("");
+
+    if (password && !isValidPassword(password))
+      setPasswordError("A senha deve ter pelo menos 6 caracteres.");
+    else setPasswordError("");
+
+    if (confirmPassword && confirmPassword !== password)
+      setConfirmError("As senhas não coincidem.");
+    else setConfirmError("");
+  }, [email, password, confirmPassword]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(clearError());
+
+    if (!isValidEmail(email)) return setEmailError("E-mail inválido.");
+    if (!isValidPassword(password)) return setPasswordError("Senha muito curta.");
+    if (confirmPassword !== password) return setConfirmError("Senhas diferentes.");
+
     dispatch(registerUser({ email, password }));
   };
-
-  if (currentUser) {
-    window.location.href = "/home";
-  }
 
   return (
     <div className="spotify-login">
       <div className="login-container">
-        <h1>Crie sua conta Pinkify</h1>
+        <h1>Criar conta</h1>
 
         <form onSubmit={handleSubmit} className="login-form">
           <input
@@ -32,14 +48,37 @@ export default function RegisterPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {emailError && <p className="error">{emailError}</p>}
+
           <input
             type="password"
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="error">{error}</p>}
-          <button type="submit">Cadastrar</button>
+          {passwordError && <p className="error">{passwordError}</p>}
+
+          <input
+            type="password"
+            placeholder="Confirme sua senha"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          {confirmError && <p className="error">{confirmError}</p>}
+
+          <button
+            type="submit"
+            disabled={
+              !!emailError ||
+              !!passwordError ||
+              !!confirmError ||
+              !email ||
+              !password ||
+              !confirmPassword
+            }
+          >
+            Cadastrar
+          </button>
         </form>
 
         <p className="register">
