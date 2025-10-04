@@ -1,0 +1,181 @@
+/* Fundo geral - mesma linha visual do login */
+.home-wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(180deg, #2a002d 0%, #0a0010 100%);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* Cabeçalho fixo no topo */
+.home-header {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.home-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ff69b4;
+  text-shadow: 0 0 10px #ff69b4a1;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 2px solid #ff69b4;
+  color: #ff69b4;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #ff69b4;
+  color: #120013;
+}
+
+/* Conteúdo centralizado */
+.home-content {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Formulário de criar/editar playlist */
+.playlist-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+
+.playlist-form input {
+  flex: 1;
+  background: #1c1c1c;
+  border: 2px solid transparent;
+  padding: 0.8rem 1rem;
+  color: #fff;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.playlist-form input:focus {
+  border-color: #ff69b4;
+  outline: none;
+}
+
+.add-btn,
+.cancel-btn {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.add-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ff85c1, #ff3ba7);
+}
+
+.cancel-btn {
+  background: #555;
+}
+
+.cancel-btn:hover {
+  background: #777;
+}
+
+/* Grade de playlists */
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card de playlist */
+.playlist-card {
+  background: #1c1c1c;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.playlist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(255, 105, 180, 0.3);
+}
+
+.playlist-info h3 {
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.playlist-info p {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin: 0.3rem 0 1rem 0;
+}
+
+/* Botões das playlists */
+.playlist-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.playlist-actions button {
+  flex: 1;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background: #ff69b4;
+  color: #120013;
+}
+
+.edit-btn:hover {
+  background: #ff8ec8;
+}
+
+.delete-btn {
+  background: #c53030;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background: #e53e3e;
+}
+
+.open-btn {
+  background: #ff1493;
+  color: #fff;
+}
+
+.open-btn:hover {
+  background: #ff3ca9;
+}
+
+.no-playlists {
+  color: #ccc;
+  text-align: center;
+  font-size: 1.1rem;
+}
