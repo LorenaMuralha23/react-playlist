@@ -173,3 +173,16 @@
   background: #ff69b4;
   color: #120013;
 }
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #121212;
+  color: #fff;
+  margin: 15px 0 25px;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 43, 158, 0.3);
+}
