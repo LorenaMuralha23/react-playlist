@@ -197,27 +197,46 @@ export default function PlaylistDetailPage() {
         {/* 🎧 LISTA DE MÚSICAS SALVAS */}
         <section className="music-list">
           <h2>🎵 Músicas da playlist</h2>
+
+          {/* 🔍 Busca interna */}
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Filtrar por nome ou artista..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* Filtra músicas já salvas */}
           {playlist.musicas.length === 0 ? (
             <p className="no-music">Nenhuma música adicionada ainda 💔</p>
           ) : (
-            playlist.musicas.map((musica) => (
-              <div key={musica.id} className="music-card">
-                <div className="music-info">
-                  <h3>{musica.nome}</h3>
-                  <p>
-                    {musica.artista} • {musica.genero} • {musica.ano}
-                  </p>
+            playlist.musicas
+              .filter((musica) =>
+                [musica.nome, musica.artista]
+                  .some((campo) =>
+                    campo.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
+              )
+              .map((musica) => (
+                <div key={musica.id} className="music-card">
+                  <div className="music-info">
+                    <h3>{musica.nome}</h3>
+                    <p>
+                      {musica.artista} • {musica.genero} • {musica.ano}
+                    </p>
+                  </div>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleRemoveMusic(musica.id)}
+                  >
+                    ❌ Remover
+                  </button>
                 </div>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleRemoveMusic(musica.id)}
-                >
-                  ❌ Remover
-                </button>
-              </div>
-            ))
+              ))
           )}
         </section>
+
 
         <button className="back-btn" onClick={() => navigate("/home")}>
           ← Voltar para Home

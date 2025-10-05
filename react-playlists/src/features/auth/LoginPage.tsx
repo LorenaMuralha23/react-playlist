@@ -42,8 +42,8 @@ export default function LoginPage() {
     <div className="spotify-login">
       <div className="login-container">
         <div className="login-header">
-          <img src="https://cdn-icons-png.flaticon.com/512/5968/5968898.png" alt="Logo" className="login-logo" />
-          <h1>Pinkify</h1>
+          <img src="https://img.icons8.com/?size=100&id=p6vT9rfwUGw6&format=png&color=000000" alt="Logo" className="login-logo" />
+          <h1>Spotifinho</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
