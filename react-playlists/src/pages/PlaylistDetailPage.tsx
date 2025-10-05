@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Playlist } from "../utils/localStorageHelper";
-import { getUserPlaylists, addMusicToPlaylist } from "../utils/playlistService";
+import {
+  getUserPlaylists,
+  addMusicToPlaylist,
+  removeMusicFromPlaylist,
+} from "../utils/playlistService";
+
 import "./PlaylistDetailPage.css";
 import type { TheAudioDBTrack } from "../types/theAudioDB";
 import { searchByArtistAndTitleOrAlbum, getTopTracks } from "../utils/theAudioDBService";
@@ -66,6 +71,13 @@ export default function PlaylistDetailPage() {
     }
   };
 
+  // 🧹 Limpar busca
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setArtistTerm("");
+    setSearchResults([]);
+  };
+
   // ➕ Adicionar música da API à playlist
   const handleAddFromAPI = (
     nome: string,
@@ -75,6 +87,19 @@ export default function PlaylistDetailPage() {
   ) => {
     const music = { nome, artista, genero, ano };
     const success = addMusicToPlaylist(Number(id), music, userEmail);
+    if (success) {
+      const playlists = getUserPlaylists(userEmail);
+      const updated = playlists.find((p) => p.id === Number(id))!;
+      setPlaylist(updated);
+    }
+  };
+
+  // 🗑️ Remover música da playlist
+  const handleRemoveMusic = (musicaId: number) => {
+    const confirmDelete = confirm("Tem certeza que deseja remover esta música?");
+    if (!confirmDelete) return;
+
+    const success = removeMusicFromPlaylist(Number(id), musicaId, userEmail);
     if (success) {
       const playlists = getUserPlaylists(userEmail);
       const updated = playlists.find((p) => p.id === Number(id))!;
@@ -100,7 +125,7 @@ export default function PlaylistDetailPage() {
       </header>
 
       <main className="playlist-detail-content">
-        {/* 🔍 BUSCA NA API */}
+        {/* 🔍 BUSCA DE MÚSICAS NA API */}
         <section className="api-search">
           <h2>Buscar músicas via TheAudioDB 🎧</h2>
 
@@ -120,6 +145,11 @@ export default function PlaylistDetailPage() {
             <button className="add-btn" onClick={handleSearch}>
               Buscar
             </button>
+            {searchResults.length > 0 && (
+              <button className="cancel-btn" onClick={handleClearSearch}>
+                Limpar busca
+              </button>
+            )}
           </div>
 
           {loading && <p>🔄 Buscando músicas...</p>}
@@ -178,6 +208,12 @@ export default function PlaylistDetailPage() {
                     {musica.artista} • {musica.genero} • {musica.ano}
                   </p>
                 </div>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleRemoveMusic(musica.id)}
+                >
+                  ❌ Remover
+                </button>
               </div>
             ))
           )}
