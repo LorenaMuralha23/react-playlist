@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import type { Playlist } from "../utils/localStorageHelper";
 import {
   getUserPlaylists,
@@ -7,55 +8,64 @@ import {
   deletePlaylist,
 } from "../utils/playlistService";
 import "./HomePage.css";
+import type { RootState } from "../app/store";
 
 export default function HomePage() {
+  const { currentUser } = useSelector((state: RootState) => state.auth);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [playlistName, setPlaylistName] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [userEmail, setUserEmail] = useState("");
+  const [lastLogin, setLastLogin] = useState("");
 
-  // 🔹 Carrega playlists do usuário logado
-  useEffect(() => {
-    const email = sessionStorage.getItem("userEmail");
-    if (!email) {
+ useEffect(() => {
+    if (!currentUser) {
       window.location.href = "/login";
       return;
     }
 
-    setUserEmail(email);
-    setPlaylists(getUserPlaylists(email));
-  }, []);
+    // ✅ Corrigido: tenta mostrar previousLogin; se não houver, mostra lastLogin
+    const previousLogin = sessionStorage.getItem("previousLogin");
+    const lastLoginValue = sessionStorage.getItem("lastLogin");
 
-  // 🔹 Criar nova playlist
+    if (previousLogin) {
+      setLastLogin(previousLogin);
+    } else if (lastLoginValue) {
+      setLastLogin(lastLoginValue);
+    }
+
+    setPlaylists(getUserPlaylists(currentUser.email));
+  }, [currentUser]);
+
+
   const handleAddPlaylist = () => {
-    if (!playlistName.trim()) return;
-
-    const newPlaylist = createPlaylist(playlistName, userEmail);
+    if (!playlistName.trim() || !currentUser) return;
+    const newPlaylist = createPlaylist(playlistName, currentUser.email);
     setPlaylists((prev) => [...prev, newPlaylist]);
     setPlaylistName("");
   };
 
-  // 🔹 Editar playlist existente
   const handleEditPlaylist = (id: number) => {
-    if (!playlistName.trim()) return;
+    if (!playlistName.trim() || !currentUser) return;
 
-    const updated = updatePlaylistName(id, playlistName, userEmail);
+    const updated = updatePlaylistName(id, playlistName, currentUser.email);
     if (updated) {
-      setPlaylists(getUserPlaylists(userEmail));
+      setPlaylists(getUserPlaylists(currentUser.email));
       setEditingId(null);
       setPlaylistName("");
     }
   };
 
-  // 🔹 Excluir playlist
   const handleDeletePlaylist = (id: number) => {
-    const deleted = deletePlaylist(id, userEmail);
+    if (!currentUser) return;
+    const confirmDelete = confirm("Tem certeza que deseja excluir esta playlist?");
+    if (!confirmDelete) return;
+
+    const deleted = deletePlaylist(id, currentUser.email);
     if (deleted) {
-      setPlaylists(getUserPlaylists(userEmail));
+      setPlaylists(getUserPlaylists(currentUser.email));
     }
   };
 
-  // 🔹 Logout
   const handleLogout = () => {
     sessionStorage.clear();
     window.location.href = "/login";
@@ -64,7 +74,17 @@ export default function HomePage() {
   return (
     <div className="home-wrapper">
       <header className="home-header">
-        <h1 className="home-title">💖 Minhas Playlists</h1>
+        <div className="header-info">
+          <h1 className="home-title">
+            💖 Olá, {currentUser?.email.split("@")[0]}!
+          </h1>
+          {lastLogin && (
+            <p className="last-login">
+              Último login: {new Date(lastLogin).toLocaleString("pt-BR")}
+            </p>
+          )}
+        </div>
+
         <button className="logout-btn" onClick={handleLogout}>
           Sair
         </button>
@@ -102,6 +122,7 @@ export default function HomePage() {
                 <div className="playlist-info">
                   <h3>{playlist.nome}</h3>
                   <p>{playlist.musicas.length} músicas</p>
+                  <p className="creator">Criada por {playlist.usuarioEmail}</p>
                 </div>
                 <div className="playlist-actions">
                   <button

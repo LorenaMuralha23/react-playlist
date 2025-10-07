@@ -9,7 +9,6 @@ interface PrivateRouteProps {
 }
 
 export default function PrivateRoute({ children }: PrivateRouteProps) {
-  // Tenta validar o login tanto pelo Redux quanto pelo sessionStorage
   const { currentUser } = useSelector((state: RootState) => state.auth);
   const sessionUser = sessionStorage.getItem("userEmail");
 
@@ -17,6 +16,5 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
     return children;
   }
 
-  // Se não estiver logado, redireciona para /login
   return <Navigate to="/login" replace />;
 }

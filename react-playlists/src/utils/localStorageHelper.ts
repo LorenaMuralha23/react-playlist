@@ -1,5 +1,3 @@
-// Funções auxiliares para lidar com playlists no localStorage
-
 export interface Musica {
   id: number;
   nome: string;
@@ -13,6 +11,7 @@ export interface Playlist {
   nome: string;
   usuarioId: string;
   musicas: Musica[];
+  usuarioEmail: string;
 }
 
 const STORAGE_KEY = "playlists";

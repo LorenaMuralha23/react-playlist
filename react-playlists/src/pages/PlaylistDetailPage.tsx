@@ -21,7 +21,6 @@ export default function PlaylistDetailPage() {
   const [searchResults, setSearchResults] = useState<TheAudioDBTrack[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Carrega playlist do usuário logado
   useEffect(() => {
     const email = sessionStorage.getItem("userEmail");
     if (!email) {
@@ -42,7 +41,6 @@ export default function PlaylistDetailPage() {
     setPlaylist(found);
   }, [id, navigate]);
 
-  // 🔍 Buscar músicas com base nos termos
   const handleSearch = async () => {
     if (!searchTerm.trim() && !artistTerm.trim()) {
       alert("Digite pelo menos o nome da música ou do artista.");
@@ -54,10 +52,8 @@ export default function PlaylistDetailPage() {
       let results: TheAudioDBTrack[] = [];
 
       if (searchTerm && artistTerm) {
-        // Buscar música ou álbum específico
         results = await searchByArtistAndTitleOrAlbum(artistTerm, searchTerm);
       } else if (artistTerm && !searchTerm) {
-        // Buscar top 10 do artista com fallback
         const topTracks = await getTopTracks(artistTerm);
         results = topTracks.length < 10 ? [...topTracks] : topTracks.slice(0, 10);
       }
@@ -71,14 +67,12 @@ export default function PlaylistDetailPage() {
     }
   };
 
-  // 🧹 Limpar busca
   const handleClearSearch = () => {
     setSearchTerm("");
     setArtistTerm("");
     setSearchResults([]);
   };
 
-  // ➕ Adicionar música da API à playlist
   const handleAddFromAPI = (
     nome: string,
     artista: string,
@@ -94,7 +88,6 @@ export default function PlaylistDetailPage() {
     }
   };
 
-  // 🗑️ Remover música da playlist
   const handleRemoveMusic = (musicaId: number) => {
     const confirmDelete = confirm("Tem certeza que deseja remover esta música?");
     if (!confirmDelete) return;
@@ -107,7 +100,6 @@ export default function PlaylistDetailPage() {
     }
   };
 
-  // 🚪 Logout
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/login");
@@ -125,7 +117,6 @@ export default function PlaylistDetailPage() {
       </header>
 
       <main className="playlist-detail-content">
-        {/* 🔍 BUSCA DE MÚSICAS NA API */}
         <section className="api-search">
           <h2>Buscar músicas via TheAudioDB 🎧</h2>
 
@@ -194,11 +185,9 @@ export default function PlaylistDetailPage() {
           )}
         </section>
 
-        {/* 🎧 LISTA DE MÚSICAS SALVAS */}
         <section className="music-list">
           <h2>🎵 Músicas da playlist</h2>
 
-          {/* 🔍 Busca interna */}
           <input
             type="text"
             className="search-input"
@@ -207,7 +196,6 @@ export default function PlaylistDetailPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {/* Filtra músicas já salvas */}
           {playlist.musicas.length === 0 ? (
             <p className="no-music">Nenhuma música adicionada ainda 💔</p>
           ) : (

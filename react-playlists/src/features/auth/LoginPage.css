@@ -1,4 +1,3 @@
-/* Fundo escuro estilo Spotify */
 .spotify-login {
   width: 100vw;
   height: 100vh;
@@ -24,7 +23,6 @@
   text-align: center;
 }
 
-/* Cabeçalho */
 .login-header {
   display: flex;
   align-items: center;
@@ -46,7 +44,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Inputs */
 .login-form {
   width: 100%;
   display: flex;
@@ -70,7 +67,7 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(255, 43, 158, 0.4);
 }
 
-/* Botão principal */
+
 button[type="submit"] {
   margin-top: 6px;
   padding: 12px;
@@ -89,7 +86,7 @@ button[type="submit"]:hover {
   box-shadow: 0 0 12px rgba(255, 43, 158, 0.5);
 }
 
-/* Divisor */
+
 .divider {
   display: flex;
   align-items: center;
@@ -109,14 +106,14 @@ button[type="submit"]:hover {
 }
 
 
-/* Erro */
+
 .error {
   color: #ff4fc3;
   font-size: 13px;
   margin-top: -6px;
 }
 
-/* Rodapé */
+
 .register {
   margin-top: 25px;
   font-size: 14px;
@@ -133,12 +130,13 @@ button[type="submit"]:hover {
   text-decoration: underline;
 }
 
-/* Animação */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

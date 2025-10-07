@@ -1,6 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-// --- Tipagens ---
 interface User {
   id: string;
   email: string;
@@ -12,12 +11,6 @@ interface AuthState {
   error: string | null;
 }
 
-const initialState: AuthState = {
-  currentUser: null,
-  error: null,
-};
-
-// --- Helpers de persistência ---
 const USERS_KEY = "users";
 const SESSION_KEY = "sessionUser";
 
@@ -46,7 +39,6 @@ function loadSession(): User | null {
   return data ? JSON.parse(data) : null;
 }
 
-// --- Slice ---
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -73,7 +65,6 @@ const authSlice = createSlice({
       users.push(newUser);
       saveUsers(users);
 
-      // Login automático após cadastro
       state.currentUser = newUser;
       saveSession(newUser);
       state.error = null;
@@ -94,6 +85,25 @@ const authSlice = createSlice({
       state.error = null;
     },
 
+    loginDefaultUser: (state) => {
+      const defaultUser: User = {
+        id: "default-user",
+        email: "user@pinkify.com",
+        password: "123456",
+      };
+
+      const users = getStoredUsers();
+      const exists = users.some((u) => u.email === defaultUser.email);
+      if (!exists) {
+        users.push(defaultUser);
+        saveUsers(users);
+      }
+
+      state.currentUser = defaultUser;
+      saveSession(defaultUser);
+      state.error = null;
+    },
+
     logoutUser: (state) => {
       state.currentUser = null;
       clearSession();
@@ -105,5 +115,12 @@ const authSlice = createSlice({
   },
 });
 
-export const { registerUser, loginUser, logoutUser, clearError } = authSlice.actions;
+export const {
+  registerUser,
+  loginUser,
+  logoutUser,
+  clearError,
+  loginDefaultUser,
+} = authSlice.actions;
+
 export default authSlice.reducer;

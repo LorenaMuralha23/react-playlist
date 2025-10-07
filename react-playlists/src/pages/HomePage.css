@@ -1,4 +1,3 @@
-/* Fundo geral - mesma linha visual do login */
 .home-wrapper {
   min-height: 100vh;
   width: 100vw;
@@ -13,7 +12,6 @@
   box-sizing: border-box;
 }
 
-/* Cabeçalho fixo no topo */
 .home-header {
   width: 100%;
   max-width: 1200px;
@@ -45,13 +43,11 @@
   color: #120013;
 }
 
-/* Conteúdo centralizado */
 .home-content {
   width: 100%;
   max-width: 1200px;
 }
 
-/* Formulário de criar/editar playlist */
 .playlist-form {
   display: flex;
   gap: 12px;
@@ -98,14 +94,12 @@
   background: #777;
 }
 
-/* Grade de playlists */
 .playlist-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
 }
 
-/* Card de playlist */
 .playlist-card {
   background: #1c1c1c;
   border-radius: 12px;
@@ -131,7 +125,6 @@
   margin: 0.3rem 0 1rem 0;
 }
 
-/* Botões das playlists */
 .playlist-actions {
   display: flex;
   gap: 0.5rem;

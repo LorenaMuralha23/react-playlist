@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { registerUser } from "./authSlice";
 import { isValidEmail, isValidPassword } from "../../utils/validation";
-import "./LoginPage.css"; // pode reutilizar o CSS
+import "./LoginPage.css"; 
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
-import { loginUser, clearError } from "./authSlice";
+import { loginUser, clearError, loginDefaultUser } from "./authSlice";
 import { isValidEmail, isValidPassword } from "../../utils/validation";
 import "./LoginPage.css";
 
@@ -29,20 +29,38 @@ export default function LoginPage() {
     if (!isValidEmail(email)) return setEmailError("E-mail inválido.");
     if (!isValidPassword(password)) return setPasswordError("Senha muito curta.");
 
+    if (email === "user@pinkify.com" && password === "123456") {
+      dispatch(loginDefaultUser());
+      return;
+    }
+
     dispatch(loginUser({ email, password }));
   };
 
-  if (currentUser) {
-    sessionStorage.setItem("userEmail", email);
-    sessionStorage.setItem("lastLogin", new Date().toLocaleString());
-    window.location.href = "/home";
-  }
+  useEffect(() => {
+    if (currentUser) {
+      const previousLogin = sessionStorage.getItem("lastLogin");
+      if (previousLogin) {
+        sessionStorage.setItem("previousLogin", previousLogin);
+      }
+
+      sessionStorage.setItem("lastLogin", new Date().toISOString());
+      sessionStorage.setItem("userEmail", currentUser.email);
+
+      window.location.href = "/home";
+    }
+  }, [currentUser]);
+
 
   return (
     <div className="spotify-login">
       <div className="login-container">
         <div className="login-header">
-          <img src="https://img.icons8.com/?size=100&id=p6vT9rfwUGw6&format=png&color=000000" alt="Logo" className="login-logo" />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4712/4712106.png"
+            alt="Logo"
+            className="login-logo"
+          />
           <h1>Spotifinho</h1>
         </div>
 

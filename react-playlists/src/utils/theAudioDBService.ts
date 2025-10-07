@@ -13,17 +13,11 @@ interface TheAudioDBAlbum {
   strAlbumThumb?: string;
 }
 
-
-/**
- * 🔍 Busca por música (título + artista).
- * Caso não encontre resultados, tenta buscar o álbum com os mesmos parâmetros.
- */
 export async function searchByArtistAndTitleOrAlbum(
   artist: string,
   title: string
 ): Promise<TheAudioDBTrack[]> {
   try {
-    // ===== 1️⃣ Primeira tentativa: busca por música =====
     const trackUrl = `${BASE_URL}/searchtrack.php?s=${encodeURIComponent(
       artist
     )}&t=${encodeURIComponent(title)}`;
@@ -44,7 +38,6 @@ export async function searchByArtistAndTitleOrAlbum(
       }
     }
 
-    // ===== 2️⃣ Segunda tentativa: busca por álbum =====
     const albumUrl = `${BASE_URL}/searchalbum.php?s=${encodeURIComponent(
       artist
     )}&a=${encodeURIComponent(title)}`;
@@ -65,7 +58,6 @@ export async function searchByArtistAndTitleOrAlbum(
 
     const albumData = JSON.parse(albumText);
 
-    // Se encontrou álbuns, converte para formato semelhante ao de música
     if (albumData?.album?.length) {
       console.log(`✅ Encontrados ${albumData.album.length} álbuns para ${artist}`);
       return albumData.album.slice(0, 10).map((a: TheAudioDBAlbum, i: number) => ({
@@ -86,9 +78,7 @@ export async function searchByArtistAndTitleOrAlbum(
   }
 }
 
-/**
- * 🏆 Retorna o Top 10 de músicas mais populares de um artista.
- */
+
 export async function getTopTracks(artist: string): Promise<TheAudioDBTrack[]> {
   try {
     const url = `${BASE_URL}/track-top10.php?s=${encodeURIComponent(artist)}`;
