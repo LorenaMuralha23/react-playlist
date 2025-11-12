@@ -1,13 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import type { Playlist } from "../utils/localStorageHelper";
-import {
-  getUserPlaylists,
-  createPlaylist,
-  updatePlaylistName,
-  deletePlaylist,
-} from "../utils/playlistService";
-import "./HomePage.css";
-
+import { getUserPlaylists, createPlaylist, updatePlaylistName, deletePlaylist } from "../service/playlistService";
+import "../pages/css/HomePage.css";
 export default function HomePage() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [playlistName, setPlaylistName] = useState("");

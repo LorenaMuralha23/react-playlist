@@ -1,5 +1,5 @@
 // src/utils/playlistService.ts
-import { getPlaylists, savePlaylists, type Playlist, type Musica } from "./localStorageHelper";
+import { getPlaylists, savePlaylists, type Playlist, type Musica } from "../utils/localStorageHelper";
 
 /**
  * Retorna todas as playlists do usuário logado.
@@ -43,9 +43,7 @@ export function updatePlaylistName(
   return true;
 }
 
-/**
- * Adiciona uma música em uma playlist.
- */
+
 export function addMusicToPlaylist(
   playlistId: number,
   musica: Omit<Musica, "id">,

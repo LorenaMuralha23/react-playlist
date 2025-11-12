@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
-import { loginUser, clearError } from "./authSlice";
-import { isValidEmail, isValidPassword } from "../../utils/validation";
-import "./LoginPage.css";
+import type { RootState } from "../app/store";
+import { clearError, loginUser } from "../features/auth/authSlice";
+import { isValidEmail, isValidPassword } from "../utils/validation";
+import "../pages/css/LoginPage.css"
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");

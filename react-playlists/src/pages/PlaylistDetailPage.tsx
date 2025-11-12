@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Playlist } from "../utils/localStorageHelper";
-import {
-  getUserPlaylists,
-  addMusicToPlaylist,
-  removeMusicFromPlaylist,
-} from "../utils/playlistService";
 
-import "./PlaylistDetailPage.css";
 import type { TheAudioDBTrack } from "../types/theAudioDB";
-import { searchByArtistAndTitleOrAlbum, getTopTracks } from "../utils/theAudioDBService";
+
+import "../pages/css/PlaylistDetailPage.css";
+import { getUserPlaylists, addMusicToPlaylist, removeMusicFromPlaylist } from "../service/playlistService";
+import { searchByArtistAndTitleOrAlbum, getTopTracks } from "../service/theAudioDBService";
 
 export default function PlaylistDetailPage() {
   const { id } = useParams();

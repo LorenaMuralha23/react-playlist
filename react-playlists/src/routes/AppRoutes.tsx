@@ -1,15 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "./features/auth/LoginPage";
-import RegisterPage from "./features/auth/RegisterPage";
-import HomePage from "./pages/HomePage";
-import PlaylistDetailPage from "./pages/PlaylistDetailPage"; // 🔹 nova importação
-import PrivateRoute from "./routes/PrivateRoute";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-export default function App() {
+import HomePage from "../pages/HomePage";
+import PlaylistDetailPage from "../pages/PlaylistDetailPage";
+import PrivateRoute from "./PrivateRoute";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+
+export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Rotas públicas */}
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
@@ -22,8 +24,6 @@ export default function App() {
             </PrivateRoute>
           }
         />
-
-        {/* 🔹 Nova rota de detalhes da playlist */}
         <Route
           path="/playlists/:id"
           element={
@@ -33,8 +33,8 @@ export default function App() {
           }
         />
 
-        {/* Rota padrão */}
-        <Route path="*" element={<LoginPage />} />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
