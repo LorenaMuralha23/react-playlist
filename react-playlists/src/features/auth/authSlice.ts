@@ -21,22 +21,24 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginUser(state, action: PayloadAction<{ email: string; password: string }>) {
+    loginUser(state, action) {
       const { email, password } = action.payload;
-
-      const foundUser = state.users.find(
+      const found = state.users.find(
         (u) => u.email === email && u.password === password
       );
 
-      if (foundUser) {
-        state.currentUser = foundUser.email;
+      if (found) {
+        state.currentUser = email; 
         state.error = null;
       } else {
-        state.error = "E-mail ou senha inválidos.";
+        state.error = "Credenciais inválidas";
       }
     },
 
-    registerUser(state, action: PayloadAction<{ email: string; password: string }>) {
+    registerUser(
+      state,
+      action: PayloadAction<{ email: string; password: string }>
+    ) {
       const { email, password } = action.payload;
 
       const alreadyExists = state.users.some((u) => u.email === email);
@@ -60,5 +62,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginUser, registerUser, logoutUser, clearError } = authSlice.actions;
+export const { loginUser, registerUser, logoutUser, clearError } =
+  authSlice.actions;
 export default authSlice.reducer;

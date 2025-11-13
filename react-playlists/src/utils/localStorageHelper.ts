@@ -1,5 +1,3 @@
-// Funções auxiliares para lidar com playlists no localStorage
-
 export interface Musica {
   id: number;
   nome: string;

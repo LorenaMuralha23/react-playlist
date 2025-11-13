@@ -4,15 +4,20 @@ import type { RootState } from "../app/store";
 import { clearError, loginUser } from "../features/auth/authSlice";
 import { isValidEmail, isValidPassword } from "../utils/validation";
 import "../pages/css/LoginPage.css"
-
+import { loadPlaylists } from "../features/playlist/playlistSlice";
+import { useNavigate } from "react-router-dom"
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { currentUser, error } = useSelector((state: RootState) => state.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const dispatch = useDispatch();
-  const { currentUser, error } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (email && !isValidEmail(email)) setEmailError("Formato de e-mail inválido.");
@@ -33,19 +38,18 @@ export default function LoginPage() {
     dispatch(loginUser({ email, password }));
   };
 
-  if (currentUser) {
-    sessionStorage.setItem("userEmail", email);
-    sessionStorage.setItem("lastLogin", new Date().toLocaleString());
-    window.location.href = "/home";
-  }
+  useEffect(() => {
+    if (currentUser) {
+      sessionStorage.setItem("userEmail", currentUser);
+      dispatch(loadPlaylists(currentUser));
+      navigate("/home");
+    }
+  }, [currentUser, dispatch, navigate]);
 
   return (
     <div className="spotify-login">
       <div className="login-container">
-        <div className="login-header">
-          <img src="https://img.icons8.com/?size=100&id=p6vT9rfwUGw6&format=png&color=000000" alt="Logo" className="login-logo" />
-          <h1>Spotifinho</h1>
-        </div>
+        <h1>Entrar</h1>
 
         <form onSubmit={handleSubmit} className="login-form">
           <input
@@ -63,7 +67,6 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {passwordError && <p className="error">{passwordError}</p>}
-
           {error && <p className="error">{error}</p>}
 
           <button
@@ -75,7 +78,7 @@ export default function LoginPage() {
         </form>
 
         <p className="register">
-          Não tem uma conta? <a href="/register">Cadastre-se</a>
+          Não tem conta? <a href="/register">Cadastre-se</a>
         </p>
       </div>
     </div>

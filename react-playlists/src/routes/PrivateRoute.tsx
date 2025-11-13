@@ -9,10 +9,12 @@ interface PrivateRouteProps {
 }
 
 export default function PrivateRoute({ children }: PrivateRouteProps) {
-  const { currentUser } = useSelector((state: RootState) => state.auth);
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const sessionUser = sessionStorage.getItem("userEmail");
 
-  const isAuthenticated = !!currentUser || !!sessionUser;
+  if (!currentUser && !sessionUser) {
+    return <Navigate to="/login" replace />;
+  }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return children;
 }

@@ -1,58 +1,53 @@
-import { useState, useEffect } from "react";
-import type { Playlist } from "../utils/localStorageHelper";
-import { getUserPlaylists, createPlaylist, updatePlaylistName, deletePlaylist } from "../service/playlistService";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../app/store";
+
 import "../pages/css/HomePage.css";
+import { clearPlaylists, createPlaylist, deletePlaylist, loadPlaylists, renamePlaylist } from "../features/playlist/playlistSlice";
+import { logoutUser } from "../features/auth/authSlice";
+
 export default function HomePage() {
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const playlists = useSelector((state: RootState) => state.playlist.playlists);
+
   const [playlistName, setPlaylistName] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [userEmail, setUserEmail] = useState("");
 
-  // 🔹 Carrega playlists do usuário logado
   useEffect(() => {
     const email = sessionStorage.getItem("userEmail");
-    if (!email) {
-      window.location.href = "/login";
-      return;
-    }
+    if (!email) return;
 
-    setUserEmail(email);
-    setPlaylists(getUserPlaylists(email));
-  }, []);
+    dispatch(loadPlaylists(email));
+  }, [dispatch]);
 
-  // 🔹 Criar nova playlist
   const handleAddPlaylist = () => {
     if (!playlistName.trim()) return;
-
-    const newPlaylist = createPlaylist(playlistName, userEmail);
-    setPlaylists((prev) => [...prev, newPlaylist]);
+    dispatch(createPlaylist(playlistName));
     setPlaylistName("");
   };
 
-  // 🔹 Editar playlist existente
-  const handleEditPlaylist = (id: number) => {
-    if (!playlistName.trim()) return;
+  const handleRenamePlaylist = () => {
+    if (!playlistName.trim() || editingId === null) return;
 
-    const updated = updatePlaylistName(id, playlistName, userEmail);
-    if (updated) {
-      setPlaylists(getUserPlaylists(userEmail));
-      setEditingId(null);
-      setPlaylistName("");
-    }
+    dispatch(renamePlaylist({ id: editingId, newName: playlistName }));
+    setEditingId(null);
+    setPlaylistName("");
   };
 
-  // 🔹 Excluir playlist
   const handleDeletePlaylist = (id: number) => {
-    const deleted = deletePlaylist(id, userEmail);
-    if (deleted) {
-      setPlaylists(getUserPlaylists(userEmail));
-    }
+    dispatch(deletePlaylist(id));
   };
 
-  // 🔹 Logout
   const handleLogout = () => {
-    sessionStorage.clear();
-    window.location.href = "/login";
+    sessionStorage.removeItem("userEmail");
+
+    dispatch(logoutUser());       
+    dispatch(clearPlaylists());   
+
+    navigate("/login");            
   };
 
   return (
@@ -68,18 +63,18 @@ export default function HomePage() {
         <div className="playlist-form">
           <input
             type="text"
-            placeholder={editingId ? "Renomear playlist..." : "Nome da nova playlist..."}
+            placeholder={editingId ? "Renomear playlist..." : "Criar playlist..."}
             value={playlistName}
             onChange={(e) => setPlaylistName(e.target.value)}
           />
+
           <button
             className="add-btn"
-            onClick={() =>
-              editingId ? handleEditPlaylist(editingId) : handleAddPlaylist()
-            }
+            onClick={editingId ? handleRenamePlaylist : handleAddPlaylist}
           >
             {editingId ? "Salvar" : "Criar"}
           </button>
+
           {editingId && (
             <button className="cancel-btn" onClick={() => setEditingId(null)}>
               Cancelar
@@ -97,6 +92,7 @@ export default function HomePage() {
                   <h3>{playlist.nome}</h3>
                   <p>{playlist.musicas.length} músicas</p>
                 </div>
+
                 <div className="playlist-actions">
                   <button
                     className="edit-btn"
@@ -107,15 +103,17 @@ export default function HomePage() {
                   >
                     Editar
                   </button>
+
                   <button
                     className="delete-btn"
                     onClick={() => handleDeletePlaylist(playlist.id)}
                   >
                     Excluir
                   </button>
+
                   <button
                     className="open-btn"
-                    onClick={() => (window.location.href = `/playlists/${playlist.id}`)}
+                    onClick={() => navigate(`/playlists/${playlist.id}`)}
                   >
                     Abrir
                   </button>
