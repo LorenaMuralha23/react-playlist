@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { registerUser } from "./authSlice";
-import { isValidEmail, isValidPassword } from "../../utils/validation";
-import "./LoginPage.css"; // pode reutilizar o CSS
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../app/store";
+import { clearError, loginUser } from "../features/auth/authSlice";
+import { isValidEmail, isValidPassword } from "../utils/validation";
+import "../pages/css/LoginPage.css"
+import { loadPlaylists } from "../features/playlist/playlistSlice";
+import { useNavigate } from "react-router-dom"
 
-export default function RegisterPage() {
+export default function LoginPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { currentUser, error } = useSelector((state: RootState) => state.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [confirmError, setConfirmError] = useState("");
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (email && !isValidEmail(email)) setEmailError("Formato de e-mail inválido.");
@@ -20,26 +26,30 @@ export default function RegisterPage() {
     if (password && !isValidPassword(password))
       setPasswordError("A senha deve ter pelo menos 6 caracteres.");
     else setPasswordError("");
-
-    if (confirmPassword && confirmPassword !== password)
-      setConfirmError("As senhas não coincidem.");
-    else setConfirmError("");
-  }, [email, password, confirmPassword]);
+  }, [email, password]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(clearError());
 
     if (!isValidEmail(email)) return setEmailError("E-mail inválido.");
     if (!isValidPassword(password)) return setPasswordError("Senha muito curta.");
-    if (confirmPassword !== password) return setConfirmError("Senhas diferentes.");
 
-    dispatch(registerUser({ email, password }));
+    dispatch(loginUser({ email, password }));
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      sessionStorage.setItem("userEmail", currentUser);
+      dispatch(loadPlaylists(currentUser));
+      navigate("/home");
+    }
+  }, [currentUser, dispatch, navigate]);
 
   return (
     <div className="spotify-login">
       <div className="login-container">
-        <h1>Criar conta</h1>
+        <h1>Entrar</h1>
 
         <form onSubmit={handleSubmit} className="login-form">
           <input
@@ -57,32 +67,18 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {passwordError && <p className="error">{passwordError}</p>}
-
-          <input
-            type="password"
-            placeholder="Confirme sua senha"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          {confirmError && <p className="error">{confirmError}</p>}
+          {error && <p className="error">{error}</p>}
 
           <button
             type="submit"
-            disabled={
-              !!emailError ||
-              !!passwordError ||
-              !!confirmError ||
-              !email ||
-              !password ||
-              !confirmPassword
-            }
+            disabled={!!emailError || !!passwordError || !email || !password}
           >
-            Cadastrar
+            Entrar
           </button>
         </form>
 
         <p className="register">
-          Já tem uma conta? <a href="/login">Entrar</a>
+          Não tem conta? <a href="/register">Cadastre-se</a>
         </p>
       </div>
     </div>

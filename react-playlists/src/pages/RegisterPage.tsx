@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
-import { loginUser, clearError } from "./authSlice";
-import { isValidEmail, isValidPassword } from "../../utils/validation";
-import "./LoginPage.css";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../features/auth/authSlice";
+import { isValidEmail, isValidPassword } from "../utils/validation";
 
-export default function LoginPage() {
+
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [confirmError, setConfirmError] = useState("");
   const dispatch = useDispatch();
-  const { currentUser, error } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (email && !isValidEmail(email)) setEmailError("Formato de e-mail inválido.");
@@ -20,31 +20,26 @@ export default function LoginPage() {
     if (password && !isValidPassword(password))
       setPasswordError("A senha deve ter pelo menos 6 caracteres.");
     else setPasswordError("");
-  }, [email, password]);
+
+    if (confirmPassword && confirmPassword !== password)
+      setConfirmError("As senhas não coincidem.");
+    else setConfirmError("");
+  }, [email, password, confirmPassword]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(clearError());
 
     if (!isValidEmail(email)) return setEmailError("E-mail inválido.");
     if (!isValidPassword(password)) return setPasswordError("Senha muito curta.");
+    if (confirmPassword !== password) return setConfirmError("Senhas diferentes.");
 
-    dispatch(loginUser({ email, password }));
+    dispatch(registerUser({ email, password }));
   };
-
-  if (currentUser) {
-    sessionStorage.setItem("userEmail", email);
-    sessionStorage.setItem("lastLogin", new Date().toLocaleString());
-    window.location.href = "/home";
-  }
 
   return (
     <div className="spotify-login">
       <div className="login-container">
-        <div className="login-header">
-          <img src="https://img.icons8.com/?size=100&id=p6vT9rfwUGw6&format=png&color=000000" alt="Logo" className="login-logo" />
-          <h1>Spotifinho</h1>
-        </div>
+        <h1>Criar conta</h1>
 
         <form onSubmit={handleSubmit} className="login-form">
           <input
@@ -63,18 +58,31 @@ export default function LoginPage() {
           />
           {passwordError && <p className="error">{passwordError}</p>}
 
-          {error && <p className="error">{error}</p>}
+          <input
+            type="password"
+            placeholder="Confirme sua senha"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          {confirmError && <p className="error">{confirmError}</p>}
 
           <button
             type="submit"
-            disabled={!!emailError || !!passwordError || !email || !password}
+            disabled={
+              !!emailError ||
+              !!passwordError ||
+              !!confirmError ||
+              !email ||
+              !password ||
+              !confirmPassword
+            }
           >
-            Entrar
+            Cadastrar
           </button>
         </form>
 
         <p className="register">
-          Não tem uma conta? <a href="/register">Cadastre-se</a>
+          Já tem uma conta? <a href="/login">Entrar</a>
         </p>
       </div>
     </div>

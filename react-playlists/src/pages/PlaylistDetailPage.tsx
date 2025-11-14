@@ -1,48 +1,60 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { Playlist } from "../utils/localStorageHelper";
-import {
-  getUserPlaylists,
-  addMusicToPlaylist,
-  removeMusicFromPlaylist,
-} from "../utils/playlistService";
+import { useDispatch, useSelector } from "react-redux";
 
-import "./PlaylistDetailPage.css";
+import type { RootState } from "../app/store";
+import {
+  addMusic,
+  removeMusic,
+  loadPlaylists,
+} from "../features/playlist/playlistSlice";
+
 import type { TheAudioDBTrack } from "../types/theAudioDB";
-import { searchByArtistAndTitleOrAlbum, getTopTracks } from "../utils/theAudioDBService";
+import {
+  searchByArtistAndTitleOrAlbum,
+  getTopTracks,
+} from "../service/theAudioDBService";
+
+import "../pages/css/PlaylistDetailPage.css";
 
 export default function PlaylistDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [playlist, setPlaylist] = useState<Playlist | null>(null);
-  const [userEmail, setUserEmail] = useState("");
+  const dispatch = useDispatch();
+
+  const playlists = useSelector((state: RootState) => state.playlist.playlists);
   const [searchTerm, setSearchTerm] = useState("");
   const [artistTerm, setArtistTerm] = useState("");
   const [searchResults, setSearchResults] = useState<TheAudioDBTrack[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasRequestedLoad, setHasRequestedLoad] = useState(false);
 
-  // 🔹 Carrega playlist do usuário logado
+  const numericId = Number(id);
+
   useEffect(() => {
     const email = sessionStorage.getItem("userEmail");
+
     if (!email) {
       navigate("/login");
       return;
     }
 
-    setUserEmail(email);
-    const playlists = getUserPlaylists(email);
-    const found = playlists.find((p) => p.id === Number(id));
-
-    if (!found) {
-      alert("Você não tem permissão para acessar esta playlist.");
-      navigate("/home");
-      return;
+    if (!hasRequestedLoad) {
+      dispatch(loadPlaylists(email));
+      setHasRequestedLoad(true);
     }
+  }, [dispatch, navigate, hasRequestedLoad]);
 
-    setPlaylist(found);
-  }, [id, navigate]);
+  const playlist = playlists.find((p) => p.id === numericId);
 
-  // 🔍 Buscar músicas com base nos termos
+  if (!hasRequestedLoad) {
+    return <p>Carregando playlist...</p>;
+  }
+
+  if (!playlist) {
+    return <p>Playlist não encontrada.</p>;
+  }
+
   const handleSearch = async () => {
     if (!searchTerm.trim() && !artistTerm.trim()) {
       alert("Digite pelo menos o nome da música ou do artista.");
@@ -54,12 +66,10 @@ export default function PlaylistDetailPage() {
       let results: TheAudioDBTrack[] = [];
 
       if (searchTerm && artistTerm) {
-        // Buscar música ou álbum específico
         results = await searchByArtistAndTitleOrAlbum(artistTerm, searchTerm);
       } else if (artistTerm && !searchTerm) {
-        // Buscar top 10 do artista com fallback
-        const topTracks = await getTopTracks(artistTerm);
-        results = topTracks.length < 10 ? [...topTracks] : topTracks.slice(0, 10);
+        const top = await getTopTracks(artistTerm);
+        results = top.slice(0, 10);
       }
 
       setSearchResults(results || []);
@@ -71,49 +81,45 @@ export default function PlaylistDetailPage() {
     }
   };
 
-  // 🧹 Limpar busca
   const handleClearSearch = () => {
     setSearchTerm("");
     setArtistTerm("");
     setSearchResults([]);
   };
 
-  // ➕ Adicionar música da API à playlist
   const handleAddFromAPI = (
     nome: string,
     artista: string,
     genero: string,
     ano: number
   ) => {
-    const music = { nome, artista, genero, ano };
-    const success = addMusicToPlaylist(Number(id), music, userEmail);
-    if (success) {
-      const playlists = getUserPlaylists(userEmail);
-      const updated = playlists.find((p) => p.id === Number(id))!;
-      setPlaylist(updated);
-    }
+    dispatch(
+      addMusic({
+        playlistId: numericId,
+        music: {
+          nome, artista, genero, ano,
+          id: 0
+        },
+      })
+    );
   };
 
-  // 🗑️ Remover música da playlist
   const handleRemoveMusic = (musicaId: number) => {
     const confirmDelete = confirm("Tem certeza que deseja remover esta música?");
     if (!confirmDelete) return;
 
-    const success = removeMusicFromPlaylist(Number(id), musicaId, userEmail);
-    if (success) {
-      const playlists = getUserPlaylists(userEmail);
-      const updated = playlists.find((p) => p.id === Number(id))!;
-      setPlaylist(updated);
-    }
+    dispatch(
+      removeMusic({
+        playlistId: numericId,
+        musicId: musicaId,
+      })
+    );
   };
 
-  // 🚪 Logout
   const handleLogout = () => {
-    sessionStorage.clear();
+    sessionStorage.removeItem("userEmail");
     navigate("/login");
   };
-
-  if (!playlist) return <p>Carregando...</p>;
 
   return (
     <div className="playlist-detail-wrapper">
@@ -125,7 +131,6 @@ export default function PlaylistDetailPage() {
       </header>
 
       <main className="playlist-detail-content">
-        {/* 🔍 BUSCA DE MÚSICAS NA API */}
         <section className="api-search">
           <h2>Buscar músicas via TheAudioDB 🎧</h2>
 
@@ -142,9 +147,11 @@ export default function PlaylistDetailPage() {
               value={artistTerm}
               onChange={(e) => setArtistTerm(e.target.value)}
             />
+
             <button className="add-btn" onClick={handleSearch}>
               Buscar
             </button>
+
             {searchResults.length > 0 && (
               <button className="cancel-btn" onClick={handleClearSearch}>
                 Limpar busca
@@ -156,49 +163,54 @@ export default function PlaylistDetailPage() {
 
           {!loading && searchResults.length > 0 && (
             <div className="api-results">
-              {searchResults.slice(0, 10).map((item) => (
-                <div key={item.idTrack || item.idArtist} className="music-card">
-                  <div className="music-info">
-                    <div className="music-text">
-                      <h3>{item.strTrack || item.strAlbum || "Título desconhecido"}</h3>
-                      <p>
-                        {item.strArtist || "Artista desconhecido"} •{" "}
-                        {item.strGenre || "Sem gênero"} •{" "}
-                        {item.intYearReleased || "—"}
-                      </p>
-                    </div>
-                  </div>
+              {searchResults.map((item) => {
+                const nome =
+                  item.strTrack ?? item.strAlbum ?? "Sem título";
+                const artista = item.strArtist ?? "Desconhecido";
+                const genero = item.strGenre ?? "";
+                const ano = Number(item.intYearReleased) || 0;
 
-                  {item.strTrack && (
+                return (
+                  <div
+                    key={item.idTrack || item.idArtist}
+                    className="music-card"
+                  >
+                    <div className="music-info">
+                      <div className="music-text">
+                        <h3>{nome}</h3>
+                        <p>
+                          {artista} • {genero || "Sem gênero"} •{" "}
+                          {ano || "—"}
+                        </p>
+                      </div>
+                    </div>
+
                     <button
                       className="add-btn"
                       onClick={() =>
-                        handleAddFromAPI(
-                          item.strTrack || item.strAlbum || "",
-                          item.strArtist || "Desconhecido",
-                          item.strGenre ?? "",
-                          Number(item.intYearReleased) || 0
-                        )
+                        handleAddFromAPI(nome, artista, genero, ano)
                       }
                     >
                       ➕ Adicionar
                     </button>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           )}
 
-          {!loading && searchResults.length === 0 && (searchTerm || artistTerm) && (
-            <p className="no-results">Nenhum resultado encontrado 😢</p>
-          )}
+          {!loading &&
+            searchResults.length === 0 &&
+            (searchTerm || artistTerm) && (
+              <p className="no-results">
+                Nenhum resultado encontrado 😢
+              </p>
+            )}
         </section>
 
-        {/* 🎧 LISTA DE MÚSICAS SALVAS */}
         <section className="music-list">
           <h2>🎵 Músicas da playlist</h2>
 
-          {/* 🔍 Busca interna */}
           <input
             type="text"
             className="search-input"
@@ -207,16 +219,14 @@ export default function PlaylistDetailPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {/* Filtra músicas já salvas */}
           {playlist.musicas.length === 0 ? (
             <p className="no-music">Nenhuma música adicionada ainda 💔</p>
           ) : (
             playlist.musicas
               .filter((musica) =>
-                [musica.nome, musica.artista]
-                  .some((campo) =>
-                    campo.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
+                [musica.nome, musica.artista].some((campo) =>
+                  campo.toLowerCase().includes(searchTerm.toLowerCase())
+                )
               )
               .map((musica) => (
                 <div key={musica.id} className="music-card">
@@ -226,6 +236,7 @@ export default function PlaylistDetailPage() {
                       {musica.artista} • {musica.genero} • {musica.ano}
                     </p>
                   </div>
+
                   <button
                     className="delete-btn"
                     onClick={() => handleRemoveMusic(musica.id)}
@@ -236,7 +247,6 @@ export default function PlaylistDetailPage() {
               ))
           )}
         </section>
-
 
         <button className="back-btn" onClick={() => navigate("/home")}>
           ← Voltar para Home

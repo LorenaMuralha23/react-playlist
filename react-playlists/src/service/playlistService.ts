@@ -1,17 +1,12 @@
 // src/utils/playlistService.ts
-import { getPlaylists, savePlaylists, type Playlist, type Musica } from "./localStorageHelper";
+import { getPlaylists, savePlaylists, type Playlist, type Musica } from "../utils/localStorageHelper";
 
-/**
- * Retorna todas as playlists do usuário logado.
- */
 export function getUserPlaylists(usuarioId: string): Playlist[] {
   const playlists = getPlaylists();
   return playlists.filter((p) => p.usuarioId === usuarioId);
 }
 
-/**
- * Cria uma nova playlist.
- */
+
 export function createPlaylist(nome: string, usuarioId: string): Playlist {
   const playlists = getPlaylists();
   const newPlaylist: Playlist = {
@@ -25,9 +20,7 @@ export function createPlaylist(nome: string, usuarioId: string): Playlist {
   return newPlaylist;
 }
 
-/**
- * Atualiza o nome de uma playlist.
- */
+
 export function updatePlaylistName(
   id: number,
   novoNome: string,
@@ -43,9 +36,7 @@ export function updatePlaylistName(
   return true;
 }
 
-/**
- * Adiciona uma música em uma playlist.
- */
+
 export function addMusicToPlaylist(
   playlistId: number,
   musica: Omit<Musica, "id">,
@@ -63,9 +54,6 @@ export function addMusicToPlaylist(
   return true;
 }
 
-/**
- * Atualiza informações de uma música específica.
- */
 export function updateMusicInPlaylist(
   playlistId: number,
   musicaId: number,
@@ -88,9 +76,6 @@ export function updateMusicInPlaylist(
   return true;
 }
 
-/**
- * Remove uma música de uma playlist.
- */
 export function removeMusicFromPlaylist(
   playlistId: number,
   musicaId: number,
@@ -105,9 +90,6 @@ export function removeMusicFromPlaylist(
   return true;
 }
 
-/**
- * Exclui uma playlist inteira.
- */
 export function deletePlaylist(id: number, usuarioId: string): boolean {
   const playlists = getPlaylists();
   const filtered = playlists.filter((p) => !(p.id === id && p.usuarioId === usuarioId));
