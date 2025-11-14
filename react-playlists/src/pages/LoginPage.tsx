@@ -49,7 +49,10 @@ export default function LoginPage() {
   return (
     <div className="spotify-login">
       <div className="login-container">
-        <h1>Entrar</h1>
+        <div className="login-header">
+          <img src="https://img.icons8.com/?size=100&id=p6vT9rfwUGw6&format=png&color=000000" alt="Logo" className="login-logo" />
+          <h1>Spotifinho</h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="login-form">
           <input
