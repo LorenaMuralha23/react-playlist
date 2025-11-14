@@ -4,7 +4,6 @@ import HomePage from "../pages/HomePage";
 import PlaylistDetailPage from "../pages/PlaylistDetailPage";
 import PrivateRoute from "./PrivateRoute";
 import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
 
 export default function AppRoutes() {
   return (
@@ -13,7 +12,6 @@ export default function AppRoutes() {
         {/* Rotas públicas */}
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
 
         {/* Rotas protegidas */}
         <Route

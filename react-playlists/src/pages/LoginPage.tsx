@@ -80,9 +80,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="register">
-          Não tem conta? <a href="/register">Cadastre-se</a>
-        </p>
       </div>
     </div>
   );
